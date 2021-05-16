@@ -1,6 +1,8 @@
 # NWT_AMTEAM
 NWT Project 2020
 
+Projekat je rađen u timu sa: Mujo Hažić i Asja Horozić.
+
 # Upute za pokretanje aplikacije:
 
 1. Instalirati PostgreSQL, verzija 12 (https://www.postgresql.org/download/)
