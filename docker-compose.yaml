@@ -1,0 +1,99 @@
+version: '3.1'
+services:
+  management:
+    container_name: management-ms
+    image: 0110997/management
+    build: ./managementmicroservice
+    networks:
+      - nwt-network
+    ports:
+      - "8085:8085"
+    expose:
+      - "8085"
+    restart: on-failure
+    depends_on:
+      - dbpostgresql
+      - eureka
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:8761/eureka
+      - DATABASE_HOST=dbpostgresql
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=NWT_Management_Microservice_DB
+      - DATABASE_PORT=5432
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/NWT_Management_Microservice_DB
+  messaging:
+    container_name: messaging-ms
+    image: 0110997/messaging
+    build: ./messagingmicroservice
+    networks:
+      - nwt-network
+    ports:
+      - "8084:8084"
+    expose:
+      - "8084"
+    restart: on-failure
+    depends_on:
+      - eureka
+      - messaging-db
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:8761/eureka
+      - DATABASE_HOST=messaging-db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=NWT_Messaging_Microservice_DB
+      - DATABASE_PORT=5432
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://messaging-db:5432/NWT_Messaging_Microservice_DB
+  api:
+    container_name: api-ms
+    image: 0110997/api
+    build: ./API
+    networks:
+      - nwt-network
+    ports:
+      - "8111:8111"
+    expose:
+      - "8111"
+  eureka:
+    container_name: eureka-ms
+    image: 0110997/eureka
+    build: ./eurekaserver
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"
+  dbpostgresql:
+    image: "postgres"
+    container_name: management-db
+    networks:
+      - nwt-network
+    ports:
+      - 5432
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: NWT_Management_Microservice_DB
+      POSTEGRES_USER: postgres
+      POSTEGRES_PASSWORD: 1234
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+  messaging-db:
+    image: "postgres"
+    container_name: messaging-db
+    networks:
+      - nwt-network
+    ports:
+      - 5432
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: NWT_Messaging_Microservice_DB
+      POSTEGRES_USER: postgres
+      POSTEGRES_PASSWORD: 1234
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+networks:
+  nwt-network:
+    driver: bridge
+
+  
